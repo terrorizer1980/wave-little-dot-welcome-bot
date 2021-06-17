@@ -11,6 +11,8 @@ const screencap = ( a ) => {
 const img_name = 'temp.png';
 const result_name = 'result.png';
 
+var count = 1;
+
 var users = { 
   DotDot:{
     last:9623857421333
@@ -27,6 +29,19 @@ const formatDate = ( d ) => {
 function main(){
   screencap( img_name, result_name );
   processImage( main );
+  if( count == 0 ){
+    //sendMessage(fs.readFileSync("bulletin.txt"), formatDate(new Date()));
+    //console.log( 
+    //)
+    bulletin();
+  }
+  count = ( count + 1 ) % 30;
+  execSync("adb shell input tap 750 2500");
+}
+
+function bulletin(){
+  let msg = util.format( fs.readFileSync("bulletin.txt", 'utf8'), execSync('date +"\ %Y-%m-%d\ %H:%M:%S"') );
+  sendMessage( msg );
 }
 
 
@@ -60,6 +75,7 @@ function processImage( callback ){
           if(res.length > 0){
             sendMessage( util.format(welcomeMsg, res.join(',') ) );
             execSync("sleep 1");
+            //bulletin();
           }
           callback();
         });
@@ -71,6 +87,7 @@ function sendMessage( msg ){
   execSync("adb shell ime set com.android.adbkeyboard/.AdbIME");
   execSync("adb shell input tap 420 2750");
 
+  execSync("adb shell am broadcast -a ADB_CLEAR_TEXT");
   execSync(`adb shell am broadcast -a ADB_INPUT_CHARS --eia chars '${m.join(",")}'`)
   execSync("adb shell input tap 1350 2700");
   execSync("adb shell ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME");
