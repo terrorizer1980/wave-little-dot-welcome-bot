@@ -4,13 +4,15 @@ const util = require("util");
 const fs = require("fs");
 const sharp = require("sharp");
 const tesseract = require('node-tesr');
-const screencap = ( a ) => {
-  execSync(`adb shell screencap /sdcard/${a}`);
-  execSync(`adb pull /sdcard/${a} ${a}`);
+const screencap = ( a, b ) => {
+  console.log( a, b );
+  execSync(`adb -s ${device} shell screencap /sdcard/${a}`);
+  execSync(`adb -s ${device} pull /sdcard/${a} ${a}`);
+
 }
 const img_name = 'temp.png';
 const result_name = 'result.png';
-
+const device = process.argv[2];
 var count = 0;
 
 var users = { 
@@ -36,7 +38,9 @@ function main(){
     bulletin();
   }
   count = ( count + 1 ) % 30;
-  execSync("adb shell input tap 750 2500");
+  //execSync(`adb -s ${device} shell input swipe 750 1800 750 2200`);
+  //execSync(`adb -s ${device} shell input swipe 750 2200 750 1400`);
+  //execSync(`adb -s ${device} shell input tap 750 2500`);
 }
 
 function bulletin(){
@@ -84,21 +88,21 @@ function processImage( callback ){
 
 function sendMessage( msg ){
   let m = msg.split("").map(v=>v.charCodeAt());
-  execSync("adb shell ime set com.android.adbkeyboard/.AdbIME");
-  execSync("adb shell input tap 300 2750");
+  execSync(`adb -s ${device} shell ime set com.android.adbkeyboard/.AdbIME`);
+  execSync(`adb -s ${device} shell input tap 300 2750`);
   
-  execSync(`adb shell am broadcast -a ADB_INPUT_CHARS --eia chars '${m.join(",")}'`);
-  //execSync("adb shell ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME");
+  execSync(`adb -s ${device} shell am broadcast -a ADB_INPUT_CHARS --eia chars '${m.join(",")}'`);
+  //execSync("adb -s ${device} shell ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME");
   //execSync("sleep 1");
-  execSync("adb shell input tap 1350 2700");
-  //adb shell ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIMEexecSync("adb shell input tap 420 2750 && adb shell input keyevent 4");
+  execSync(`adb -s ${device} shell input tap 1350 2700`);
+  //adb -s ${device} shell ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIMEexecSync("adb -s ${device} shell input tap 420 2750 && adb -s ${device} shell input keyevent 4");
 }
 
 
 function resetKeyboard(){
-  execSync("adb shell ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME");
+  execSync(`adb -s ${device} shell ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME`);
 }
-// adb shell ime set com.android.adbkeyboard/.AdbIME   
+// adb -s ${device} shell ime set com.android.adb -s ${device}keyboard/.AdbIME   
 // com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
 
 // Program start
